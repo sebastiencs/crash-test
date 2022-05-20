@@ -1,0 +1,8 @@
+[submodule "log-writes"]
+	path = log-writes
+	url = https://github.com/josefbacik/log-writes.git
+	branch = master
+[submodule "tezedge"]
+	path = tezedge
+	url = https://github.com/tezedge/tezedge.git
+	branch = develop
