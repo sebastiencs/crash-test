@@ -4,17 +4,20 @@
 
 set -xe
 
-mount -o ro /dev/sdb "$CONTEXT_PATH" || exit 0
+mount -o ro /dev/sdb "$MOUNT_PATH" || exit 0
 
-#FILE="store.pack"
-FILE="sizes.db"
+if [ "$MODE" = "tezedge" ]; then
+    FILE="sizes.db"
+elif [ "$MODE" = "irmin" ]; then
+    FILE="store.pack"
+fi
 
-ls -laR "$CONTEXT_PATH" || true
+ls -laR "$MOUNT_PATH" || true
 
 if [ ! -f "$CONTEXT_PATH/$FILE" ];then
     echo "Context does not exist"
     sleep 0.1s
-    umount "$CONTEXT_PATH"
+    umount "$MOUNT_PATH"
     exit 0
 fi
 
@@ -45,4 +48,4 @@ else
     echo -n 1 >> /tmp/valid_context
 fi
 
-umount "$CONTEXT_PATH" || true
+umount "$MOUNT_PATH" || true
