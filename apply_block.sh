@@ -12,30 +12,85 @@ TARGET_DIR=$MOUNT_PATH
 #BLOCK=BMYopWiktTXmocoxeCZYvtLWbeqyzuhLovj5RREuEEyzk4z6H8L # 10_000
 #BLOCK=BKop5gi9HpsUsBDDL78wVGJg2WcRUtUU384jcov2GP2Xdiu2WnZ # 5_000
 
-if [ "$MODE" = "tezedge" ]; then
-    STORAGE="tezedge"
-elif [ "$MODE" = "irmin" ]; then
-    STORAGE="irmin"
-fi
+if [ "$MODE" = "tezedge" ] || [ "$MODE" = "irmin" ]; then
 
-if [ "$INMEM" = 1 ]; then
-    BLOCK=BLJXpn34ZfhtjFGb4gh61k8FLCzqNx2ZU7brBhihtYHtqghYe6U # 400
-    TEZEDGE_CONTEXT=inmem
+    if [ "$MODE" = "tezedge" ]; then
+        STORAGE="tezedge"
+    elif [ "$MODE" = "irmin" ]; then
+        STORAGE="irmin"
+    fi
+
+    if [ "$INMEM" = 1 ]; then
+        BLOCK=BLJXpn34ZfhtjFGb4gh61k8FLCzqNx2ZU7brBhihtYHtqghYe6U # 400
+        TEZEDGE_CONTEXT=inmem
+    else
+        BLOCK=BLB6MA3z5jZmngy6CSbDFJ5kXhDfz1B9Zb3EPLxSm9oipvHkaxU # 10
+        TEZEDGE_CONTEXT=ondisk
+    fi
+
+    export TEZEDGE_GC_DELAY_SNAPSHOT_SEC="0"
+
+    "$TEZEDGE_PATH/target/release/light-node" \
+        --config-file "$TEZEDGE_PATH/light_node/etc/tezedge/tezedge.config" \
+        --network=hangzhounet \
+        --log-level info \
+        --protocol-runner "$TEZEDGE_PATH/target/release/protocol-runner" \
+        --tezos-data-dir ~/tmp/hangzhou/ \
+        replay \
+        --target-path "$TARGET_DIR" \
+        --to-block "$BLOCK" \
+        --tezos-context-storage="$STORAGE" \
+        --context-kv-store="$TEZEDGE_CONTEXT"
+
+    # "$TEZEDGE_PATH/target/release/light-node" \
+    #     --config-file ~/github/crash-test/tezedge/light_node/etc/tezedge/tezedge.config \
+    #     --network=hangzhounet \
+    #     --log-level info \
+    #     --protocol-runner ~/github/crash-test/tezedge/target/release/protocol-runner \
+    #     --tezos-data-dir ~/tmp/hangzhou/ \
+    #     --tezos-context-storage=tezedge \
+    #     --context-kv-store=inmem \
+    #     --disable-bootstrap-lookup
+
 else
-    BLOCK=BLB6MA3z5jZmngy6CSbDFJ5kXhDfz1B9Zb3EPLxSm9oipvHkaxU # 10
-    TEZEDGE_CONTEXT=ondisk
+
+    "$TEZEDGE_PATH/target/release/light-node" \
+        --protocol-runner "$TEZEDGE_PATH/target/release/protocol-runner" \
+        --tezos-data-dir "$TARGET_DIR" \
+        --network=hangzhounet \
+        --bootstrap-db-path=bootstrap_db \
+        --tezos-context-storage=tezedge \
+        --p2p-port 19732 \
+        --peers="127.0.0.1:9733" \
+        --rpc-port=18733 \
+        --config-file "$TEZEDGE_PATH/light_node/etc/tezedge/tezedge.config" &
+
+    # --tezos-context-storage=tezedge \
+
+    TPID=$!
+
+    block=0
+    previous_block=100000
+    attempts=0
+    while [ $attempts -lt 6000 ]; do
+        sleep 1
+        b=$(curl -s localhost:18733/chains/main/blocks/head | jq .header.level)
+        block=${b:-$block}
+        echo "===> Block level $block"
+        if [ $block -gt 10 ]; then
+            # umount /mnt/data-repaired || true
+            # exit 0
+            break
+        fi
+        attempts=$(($attempts + 1))
+    done
+
+
+    # sleep 5m
+
+    kill $TPID
+    # pkill -9 protocol
+
+    sleep 5s
+
 fi
-
-export TEZEDGE_GC_DELAY_SNAPSHOT_SEC="0"
-
-"$TEZEDGE_PATH/target/release/light-node" \
-    --config-file "$TEZEDGE_PATH/light_node/etc/tezedge/tezedge.config" \
-    --network=hangzhounet \
-    --log-level info \
-    --protocol-runner "$TEZEDGE_PATH/target/release/protocol-runner" \
-    --tezos-data-dir ~/tmp/hangzhou/ \
-    replay \
-    --target-path "$TARGET_DIR" \
-    --to-block "$BLOCK" \
-    --tezos-context-storage="$STORAGE" \
-    --context-kv-store="$TEZEDGE_CONTEXT"

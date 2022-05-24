@@ -2,9 +2,12 @@
 
 set -xe
 
+trap 'pkill -e -P $$' EXIT
+# trap 'jobs -p | xargs kill' EXIT
+
 . ./variables.sh
 
-"$BASEDIR/init.sh"
+. "$BASEDIR/init.sh"
 
 # Must be run as root
 if [ "$EUID" -ne 0 ]
@@ -33,6 +36,10 @@ dmsetup remove log || true
 rm -rf /tmp/valid_context /tmp/invalid_context "$MOUNT_PATH"
 mkdir -p "$CONTEXT_PATH"
 
+if [ "$MODE" = "bootstrap" ]; then
+    . "$BASEDIR/start_first_node.sh"
+fi
+
 # if [ $INMEM = 1 ]; then
 #     export CONTEXT_PATH=$MOUNT_PATH
 # fi
@@ -50,15 +57,19 @@ mkfs.btrfs -f /dev/mapper/log
 dmsetup message log 0 mark mkfs
 mount /dev/mapper/log "$MOUNT_PATH"
 
-mkdir -p "$MOUNT_PATH/bootstrap_db"
-mount -t tmpfs -o size=2000M tmpfs "$MOUNT_PATH/bootstrap_db"
+if [ "$MODE" != "bootstrap" ]; then
+    mkdir -p "$MOUNT_PATH/bootstrap_db"
+    mount -t tmpfs -o size=2000M tmpfs "$MOUNT_PATH/bootstrap_db"
+fi
 
 ## Apply tezos blocks
 dmsetup message log 0 mark start
-"$BASEDIR/apply_block.sh"
+. "$BASEDIR/apply_block.sh"
 dmsetup message log 0 mark fsync-end
 
-umount "$MOUNT_PATH/bootstrap_db"
+if [ "$MODE" != "bootstrap" ]; then
+    umount "$MOUNT_PATH/bootstrap_db"
+fi
 umount "$MOUNT_PATH"
 dmsetup remove log
 
