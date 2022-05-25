@@ -3,7 +3,6 @@
 set -xe
 
 TARGET_DIR=$MOUNT_PATH
-#TARGET_DIR=/home/sebastien/tmp/replay
 
 # BLOCK=BLB6MA3z5jZmngy6CSbDFJ5kXhDfz1B9Zb3EPLxSm9oipvHkaxU # 10
 # BLOCK=BLjhhb3SvKgLL8dk7223oE69RmKbJo97UTtWyorT76U2MAgkWdn # 100
@@ -42,17 +41,8 @@ if [ "$MODE" = "tezedge" ] || [ "$MODE" = "irmin" ]; then
         --tezos-context-storage="$STORAGE" \
         --context-kv-store="$TEZEDGE_CONTEXT"
 
-    # "$TEZEDGE_PATH/target/release/light-node" \
-    #     --config-file ~/github/crash-test/tezedge/light_node/etc/tezedge/tezedge.config \
-    #     --network=hangzhounet \
-    #     --log-level info \
-    #     --protocol-runner ~/github/crash-test/tezedge/target/release/protocol-runner \
-    #     --tezos-data-dir ~/tmp/hangzhou/ \
-    #     --tezos-context-storage=tezedge \
-    #     --context-kv-store=inmem \
-    #     --disable-bootstrap-lookup
-
 else
+    ## Bootstrap test
 
     "$TEZEDGE_PATH/target/release/light-node" \
         --protocol-runner "$TEZEDGE_PATH/target/release/protocol-runner" \
@@ -65,32 +55,22 @@ else
         --rpc-port=18733 \
         --config-file "$TEZEDGE_PATH/light_node/etc/tezedge/tezedge.config" &
 
-    # --tezos-context-storage=tezedge \
-
     TPID=$!
 
     block=0
     previous_block=100000
     attempts=0
-    while [ $attempts -lt 6000 ]; do
+    while [ $attempts -lt 60 ]; do
         sleep 1
         b=$(curl -s localhost:18733/chains/main/blocks/head | jq .header.level)
         block=${b:-$block}
         echo "===> Block level $block"
         if [ $block -gt 10 ]; then
-            # umount /mnt/data-repaired || true
-            # exit 0
             break
         fi
         attempts=$(($attempts + 1))
     done
 
-
-    # sleep 5m
-
     kill $TPID
-    # pkill -9 protocol
-
     sleep 5s
-
 fi

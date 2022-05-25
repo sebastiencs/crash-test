@@ -2,8 +2,8 @@
 
 set -xe
 
+## Kill all child process on exit
 trap 'pkill -e -P $$' EXIT
-# trap 'jobs -p | xargs kill' EXIT
 
 . ./variables.sh
 
@@ -40,10 +40,6 @@ if [ "$MODE" = "bootstrap" ]; then
     . "$BASEDIR/start_first_node.sh"
 fi
 
-# if [ $INMEM = 1 ]; then
-#     export CONTEXT_PATH=$MOUNT_PATH
-# fi
-
 ## Format `/dev/sdb` and `/dev/sdc`
 mkfs.btrfs -f $DEV_LOG
 mkfs.btrfs -f $DEV_REPLAY
@@ -78,14 +74,15 @@ dmsetup remove log
 
 ## Replay requests until `fsync-end` mark
 ## After every `FUA` request, we run the integrity check on the database
-#"$LOG_WRITES_PATH/replay-log" -v --log $DEV_REPLAY --replay $DEV_LOG --start-mark mkfs --fsck "$BASEDIR/verify_context.sh" --check fua
 "$LOG_WRITES_PATH/replay-log" -v --log $DEV_REPLAY --replay $DEV_LOG --start-mark mkfs --end-mark fsync-end --fsck "$BASEDIR/verify_context.sh" --check fua
 
 rm -rf "$MOUNT_PATH"
 
 set +x
-touch /tmp/valid_context /tmp/invalid_context
+if [ "$MODE" != "bootstrap" ]; then
+    touch /tmp/valid_context /tmp/invalid_context
 
-echo -e "\nResult:"
-echo "- $(cat /tmp/invalid_context | wc -c) invalid context"
-echo "- $(cat /tmp/valid_context | wc -c) valid context"
+    echo -e "\nResult:"
+    echo "- $(cat /tmp/invalid_context | wc -c) invalid context"
+    echo "- $(cat /tmp/valid_context | wc -c) valid context"
+fi

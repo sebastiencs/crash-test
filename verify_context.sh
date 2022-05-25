@@ -53,7 +53,7 @@ if [ "$MODE" = "tezedge" ] || [ "$MODE" = "irmin" ]; then
     umount "$MOUNT_PATH" || true
 
 else
-    echo "Bootstrap"
+    ## Bootstrap test
 
     btrfs check --readonly /dev/sdb
 
@@ -81,17 +81,6 @@ else
         --rpc-port=18733 \
         --config-file "$TEZEDGE_PATH/light_node/etc/tezedge/tezedge.config" &
 
-    # LD_LIBRARY_PATH=/home/sebastien/github/crash-test/tezedge/tezos/sys/lib_tezos/artifacts/ /home/sebastien/github/crash-test/tezedge/target/release/light-node \
-    #                --protocol-runner=/home/sebastien/github/crash-test/tezedge/target/release/protocol-runner \
-    #                --tezos-data-dir ~/tmp/hangzhou \
-    #                --network hangzhounet \
-    #                --bootstrap-db-path=bootstrap_db \
-    #                --tezos-context-storage=tezedge \
-    #                --p2p-port 9733 \
-    #                --rpc-port=18734 \
-    #                --disable-bootstrap-lookup \
-    #                --config-file "/home/sebastien/github/crash-test/tezedge/light_node/etc/tezedge/tezedge.config"
-
     TPID=$!
 
     block=0
@@ -104,11 +93,8 @@ else
         echo "===> ici Block level $block"
         if [ $block -gt $previous_block ]; then
             kill $TPID || true
-            # pkill -9 light-node || true
-            # pkill -9 protocol || true
             sleep 1
             umount "$MOUNT_PATH" || true
-            # umount /mnt/data-repaired || true
             exit 0
         fi
         previous_block=$block
@@ -116,11 +102,7 @@ else
     done
 
     kill $TPID || true
-    # pkill -9 light-node || true
-    # pkill -9 protocol || true
-    sleep 11
+    sleep 10
     umount "$MOUNT_PATH" || true
-    # umount /mnt/data-repaired || true
     exit 1
-
 fi
