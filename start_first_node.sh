@@ -2,6 +2,11 @@
 
 set -xe
 
+SLEEP="10s"
+if [ ! -d /tmp/first_node ]; then
+    SLEEP="40s"
+fi
+
 mkdir -p /tmp/first_node
 cd /tmp/first_node
 
@@ -17,6 +22,6 @@ cd /tmp/first_node
     --p2p-port 9733 \
     --rpc-port=18734 &
 
-sleep 15s
+sleep "$SLEEP"
 
 cd "$BASEDIR"

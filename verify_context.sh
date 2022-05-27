@@ -82,27 +82,30 @@ else
         --config-file "$TEZEDGE_PATH/light_node/etc/tezedge/tezedge.config" &
 
     TPID=$!
+    sleep 2s
 
     block=0
     previous_block=100000
     attempts=0
     while [ $attempts -lt 30 ]; do
-        sleep 2
+        sleep 1s
         b=$(curl -s localhost:18733/chains/main/blocks/head | jq .header.level)
         block=${b:-$block}
         echo "===> ici Block level $block"
         if [ $block -gt $previous_block ]; then
             kill $TPID || true
-            sleep 1
+            sleep 1s
             umount "$MOUNT_PATH" || true
             exit 0
         fi
-        previous_block=$block
+        if [ $block -gt 0 ]; then
+            previous_block=$block
+        fi
         attempts=$(($attempts + 1))
     done
 
     kill $TPID || true
-    sleep 10
+    sleep 10s
     umount "$MOUNT_PATH" || true
     exit 1
 fi
