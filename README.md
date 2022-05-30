@@ -17,7 +17,7 @@ This test applies 10 blocks from hanghzounet
 
 ##### Run:
 ```
-$ sudo ./replay tezedge
+$ sudo ./run_test.sh tezedge
 ```
 ##### Result:
 ```
@@ -33,7 +33,7 @@ This test applies 10 blocks from hanghzounet
 
 ##### Run:
 ```
-$ sudo ./replay irmin
+$ sudo ./run_test.sh irmin
 ```
 ##### Result:
 ```
@@ -52,7 +52,7 @@ This test ensure that the snapshots are valid.
 
 ##### Run:
 ```
-$ sudo ./replay tezedge-inmem
+$ sudo ./run_test.sh tezedge-inmem
 ```
 ##### Result:
 ```
@@ -65,7 +65,7 @@ Result:
 
 ##### Run:
 ```
-$ sudo ./replay bootstrap
+$ sudo ./run_test.sh bootstrap
 ```
 
 This will bootstrap the node on hangzhounet.  
