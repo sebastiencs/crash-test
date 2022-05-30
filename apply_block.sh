@@ -20,10 +20,12 @@ if [ "$MODE" = "tezedge" ] || [ "$MODE" = "irmin" ]; then
     fi
 
     if [ "$INMEM" = 1 ]; then
-        BLOCK=BLJXpn34ZfhtjFGb4gh61k8FLCzqNx2ZU7brBhihtYHtqghYe6U # 400
+        BLOCK=BMK3jvChnpvqHqHvPErHk7WGWyAVmvjwq8EMj8QJ5t3TRCy3Gqd # 400 ithaca
+        # BLOCK=BLJXpn34ZfhtjFGb4gh61k8FLCzqNx2ZU7brBhihtYHtqghYe6U # 400
         TEZEDGE_CONTEXT=inmem
     else
-        BLOCK=BLB6MA3z5jZmngy6CSbDFJ5kXhDfz1B9Zb3EPLxSm9oipvHkaxU # 10
+        BLOCK=BLqNTDzsU6hETYiAu4s1Ring6MsC5StmNps3fzcnxbRVW6LGk9Y # 10 ithaca
+        # BLOCK=BLB6MA3z5jZmngy6CSbDFJ5kXhDfz1B9Zb3EPLxSm9oipvHkaxU # 10
         TEZEDGE_CONTEXT=ondisk
     fi
 
@@ -31,7 +33,7 @@ if [ "$MODE" = "tezedge" ] || [ "$MODE" = "irmin" ]; then
 
     "$TEZEDGE_PATH/target/release/light-node" \
         --config-file "$TEZEDGE_PATH/light_node/etc/tezedge/tezedge.config" \
-        --network=hangzhounet \
+        --network=ithacanet \
         --log-level info \
         --protocol-runner "$TEZEDGE_PATH/target/release/protocol-runner" \
         --tezos-data-dir "$BASEDIR/database" \
@@ -47,7 +49,7 @@ else
     "$TEZEDGE_PATH/target/release/light-node" \
         --protocol-runner "$TEZEDGE_PATH/target/release/protocol-runner" \
         --tezos-data-dir "$TARGET_DIR" \
-        --network=hangzhounet \
+        --network=ithacanet \
         --bootstrap-db-path=bootstrap_db \
         --tezos-context-storage=tezedge \
         --p2p-port 19732 \

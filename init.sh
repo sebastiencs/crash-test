@@ -15,13 +15,13 @@ if [ ! -f "$LOG_WRITES_PATH/replay-log" ];then
 fi
 
 if [ ! -d "$BASEDIR/database/bootstrap_db" ];then
-    # Download at least 1000 headers on hangzhounet
+    # Download at least 1000 headers on ithacanet
 
     mkdir -p "$BASEDIR/database"
 
     "$TEZEDGE_PATH/target/release/light-node" \
         --config-file "$TEZEDGE_PATH/light_node/etc/tezedge/tezedge.config" \
-        --network=hangzhounet \
+        --network=ithacanet \
         --log-level info \
         --protocol-runner "$TEZEDGE_PATH/target/release/protocol-runner" \
         --tezos-data-dir "$BASEDIR/database" \

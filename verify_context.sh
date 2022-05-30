@@ -73,7 +73,7 @@ else
     "$TEZEDGE_PATH/target/release/light-node" \
         --protocol-runner "$TEZEDGE_PATH/target/release/protocol-runner" \
         --tezos-data-dir /tmp/tezos_dir/ \
-        --network=hangzhounet \
+        --network=ithacanet \
         --bootstrap-db-path=bootstrap_db \
         --tezos-context-storage=tezedge \
         --p2p-port 19732 \
