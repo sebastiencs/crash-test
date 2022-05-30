@@ -35,7 +35,7 @@ if [ ! -d "$BASEDIR/database/bootstrap_db" ];then
     block=0
     previous_block=100000
     attempts=0
-    while [ $attempts -lt 1440 ]; do
+    while [ $attempts -lt 2160 ]; do
         sleep 5
         b=$(curl -s localhost:18733/chains/main/blocks/head | jq .header.level)
         block=${b:-$block}
