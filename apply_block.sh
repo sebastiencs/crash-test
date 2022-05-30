@@ -34,7 +34,7 @@ if [ "$MODE" = "tezedge" ] || [ "$MODE" = "irmin" ]; then
         --network=hangzhounet \
         --log-level info \
         --protocol-runner "$TEZEDGE_PATH/target/release/protocol-runner" \
-        --tezos-data-dir ~/tmp/hangzhou/ \
+        --tezos-data-dir "$BASEDIR/database" \
         replay \
         --target-path "$TARGET_DIR" \
         --to-block "$BLOCK" \

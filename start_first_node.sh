@@ -15,7 +15,7 @@ cd /tmp/first_node
     --network=hangzhounet \
     --log-level info \
     --protocol-runner "$TEZEDGE_PATH/target/release/protocol-runner" \
-    --tezos-data-dir /home/sebastien/tmp/hangzhou/ \
+    --tezos-data-dir "$BASEDIR/database" \
     --tezos-context-storage=tezedge \
     --context-kv-store=inmem \
     --disable-bootstrap-lookup \
