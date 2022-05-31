@@ -4,9 +4,19 @@
 
 set -xe
 
+if [ ! -d "$TEZEDGE_PATH" ];then
+    cd "$BASEDIR"
+    git clone -b develop --depth 1 git@github.com:tezedge/tezedge.git tezedge
+fi
+
 if [ ! -f "$TEZEDGE_PATH/target/release/light-node" ];then
     cd "$TEZEDGE_PATH"
     cargo build --release
+fi
+
+if [ ! -d "$LOG_WRITES_PATH" ];then
+    cd "$BASEDIR"
+    git clone https://github.com/josefbacik/log-writes.git log-writes
 fi
 
 if [ ! -f "$LOG_WRITES_PATH/replay-log" ];then
@@ -15,7 +25,7 @@ if [ ! -f "$LOG_WRITES_PATH/replay-log" ];then
 fi
 
 if [ ! -d "$BASEDIR/database/bootstrap_db" ];then
-    # Download at least 1000 headers on ithacanet
+    # Download headers/operations on ithacanet
 
     mkdir -p "$BASEDIR/database"
 
@@ -35,9 +45,9 @@ if [ ! -d "$BASEDIR/database/bootstrap_db" ];then
     block=0
     previous_block=100000
     attempts=0
-    while [ $attempts -lt 2160 ]; do
+    while [ $attempts -lt 5000 ]; do
         sleep 5
-        b=$(curl -s localhost:18733/chains/main/blocks/head | jq .header.level)
+        b=$(curl -s localhost:18734/chains/main/blocks/head | jq .header.level)
         block=${b:-$block}
         echo "===> Block level $block"
         if [ $block -gt 1000 ]; then
