@@ -20,6 +20,9 @@ This was tested in a VM with Ubuntu 22.04 and 2 additional partitions:
 - `/dev/sdb` 2 GB
 - `/dev/sdc` 2 GB
 
+Note: The first run of any of those tests will take a few hours to complete, because it needs to download all block headers on testnet.  
+Downloading the headers is required only once.
+
 ## Tezedge context storage (persistent)
 
 This test applies 10 blocks from ithacanet
