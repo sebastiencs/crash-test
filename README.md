@@ -1,19 +1,27 @@
 # Testing Tezedge crash consistency
 
-Tests to ensure that tezedge is able to resume after a crash occurs, and the integrity of the database is not altered
+Tests to ensure that tezedge is able to resume after a crash occurs, and the integrity of the database is not altered.  
+
+We are simulating crashes by saving the storage after every block IO request, at the block layer.  
+We then attempt to restart the node on top of the saved storage, and perform some integrity checks.  
+The tests are using [dm-log-writes](https://www.kernel.org/doc/html/latest/admin-guide/device-mapper/log-writes.html).  
+
+![image](https://www.thomas-krenn.com/de/wikiDE/images/e/e0/Linux-storage-stack-diagram_v4.10.png)
+
+When an application write to the storage (with the syscalls `write(2)`, `chmod(2)`, `fsync(2)`, etc), it translates
+at the block layer to a sequence of requests: [`REQ_META`, `REQ_PREFLUSH`, `REQ_FUA`, ..](https://github.com/torvalds/linux/blob/8ab2afa23bd197df47819a87f0265c0ac95c5b6a/include/linux/blk_types.h#L387-L422)
+
+We ensure that after every FUA requests, the database is in a valid state, and that Tezedge is able to restart with
+that database.   
+A `FUA` request can be triggered from an application by calling `fsync` or `fdatasync`
 
 This was tested in a VM with Ubuntu 22.04 and 2 additional partitions:
 - `/dev/sdb` 2 GB
 - `/dev/sdc` 2 GB
 
-The tests are using [dm-log-writes](https://www.kernel.org/doc/html/latest/admin-guide/device-mapper/log-writes.html).  
-They replay every block requests made to the storage, and after every [FUA](https://github.com/torvalds/linux/blob/master/Documentation/block/writeback_cache_control.rst)
-request they check the integrity of the database.  
-A `FUA` request is triggered when the userspace program calls `fsync` or `fdatasync`
-
 ## Tezedge context storage (persistent)
 
-This test applies 10 blocks from hanghzounet
+This test applies 10 blocks from ithacanet
 
 ##### Run:
 ```
@@ -29,7 +37,7 @@ After every `FUA` request, a valid context was found
 
 ## Irmin context storage 
 
-This test applies 10 blocks from hanghzounet
+This test applies 10 blocks from ithacanet
 
 ##### Run:
 ```
@@ -68,7 +76,7 @@ Result:
 $ sudo ./run_test.sh bootstrap
 ```
 
-This will bootstrap the node on hangzhounet.  
+This will bootstrap the node on ithacanet.  
 After every `FUA` request, it will attempt to continue the bootstrapping process.  
 The test takes several hours to complete.
 
