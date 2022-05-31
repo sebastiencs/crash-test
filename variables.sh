@@ -6,7 +6,9 @@ export DEV_LOG=/dev/sdb
 export DEV_REPLAY=/dev/sdc
 
 export TEZEDGE_PATH="$BASEDIR/tezedge"
-export LOG_WRITES_PATH="$BASEDIR/log-writes"
+
+export LOG_WRITES_PATH="$BASEDIR/log-writes-rs"
+export LOG_WRITES_BIN="$LOG_WRITES_PATH/target/release/log-write"
 
 export MOUNT_PATH=/mnt/crash-test
 export CONTEXT_PATH="$MOUNT_PATH/context"

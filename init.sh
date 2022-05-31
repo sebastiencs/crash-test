@@ -16,12 +16,12 @@ fi
 
 if [ ! -d "$LOG_WRITES_PATH" ];then
     cd "$BASEDIR"
-    git clone https://github.com/josefbacik/log-writes.git log-writes
+    git clone https://github.com/sebastiencs/log-writes-rs.git log-writes-rs
 fi
 
-if [ ! -f "$LOG_WRITES_PATH/replay-log" ];then
+if [ ! -f "$LOG_WRITES_BIN" ];then
     cd "$LOG_WRITES_PATH"
-    make
+    cargo build --release
 fi
 
 if [ ! -d "$BASEDIR/database/bootstrap_db" ];then

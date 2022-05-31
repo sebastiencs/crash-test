@@ -70,11 +70,11 @@ umount "$MOUNT_PATH"
 dmsetup remove log
 
 ## Replay requests until `mkfs` mark
-"$LOG_WRITES_PATH/replay-log" --log $DEV_REPLAY --replay $DEV_LOG --end-mark mkfs
+"$LOG_WRITES_BIN" --log $DEV_REPLAY --replay $DEV_LOG --end-mark mkfs
 
 ## Replay requests until `fsync-end` mark
 ## After every `FUA` request, we run the integrity check on the database
-"$LOG_WRITES_PATH/replay-log" -v --log $DEV_REPLAY --replay $DEV_LOG --start-mark mkfs --end-mark fsync-end --fsck "$BASEDIR/verify_context.sh" --check fua
+"$LOG_WRITES_BIN" -v --log $DEV_REPLAY --replay $DEV_LOG --start-mark mkfs --end-mark fsync-end --fsck "$BASEDIR/verify_context.sh" --check fua
 
 rm -rf "$MOUNT_PATH"
 
