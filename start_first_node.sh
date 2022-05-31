@@ -12,7 +12,7 @@ cd /tmp/first_node
 
 "$TEZEDGE_PATH/target/release/light-node" \
     --config-file "$TEZEDGE_PATH/light_node/etc/tezedge/tezedge.config" \
-    --network=ithacanet \
+    --network="$NETWORK" \
     --log-level info \
     --protocol-runner "$TEZEDGE_PATH/target/release/protocol-runner" \
     --tezos-data-dir "$BASEDIR/database" \

@@ -15,3 +15,8 @@ export CONTEXT_PATH="$MOUNT_PATH/context"
 
 export LD_LIBRARY_PATH="$TEZEDGE_PATH/tezos/sys/lib_tezos/artifacts/"
 export RUST_BACKTRACE=1
+
+# Change those values for other network
+export NETWORK=ithacanet
+export BLOCK_LEVEL_400=BMK3jvChnpvqHqHvPErHk7WGWyAVmvjwq8EMj8QJ5t3TRCy3Gqd # 400 ithaca
+export BLOCK_LEVEL_10=BLqNTDzsU6hETYiAu4s1Ring6MsC5StmNps3fzcnxbRVW6LGk9Y # 10 ithaca

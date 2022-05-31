@@ -4,13 +4,6 @@ set -xe
 
 TARGET_DIR=$MOUNT_PATH
 
-# BLOCK=BLB6MA3z5jZmngy6CSbDFJ5kXhDfz1B9Zb3EPLxSm9oipvHkaxU # 10
-# BLOCK=BLjhhb3SvKgLL8dk7223oE69RmKbJo97UTtWyorT76U2MAgkWdn # 100
-#BLOCK=BLJXpn34ZfhtjFGb4gh61k8FLCzqNx2ZU7brBhihtYHtqghYe6U # 400
-#BLOCK=BKz1GxoMayAmSKeVJSRBwWSzQcYdmoxgFUzBstBoZu3yiNdQE7f #1_000
-#BLOCK=BMYopWiktTXmocoxeCZYvtLWbeqyzuhLovj5RREuEEyzk4z6H8L # 10_000
-#BLOCK=BKop5gi9HpsUsBDDL78wVGJg2WcRUtUU384jcov2GP2Xdiu2WnZ # 5_000
-
 if [ "$MODE" = "tezedge" ] || [ "$MODE" = "irmin" ]; then
 
     if [ "$MODE" = "tezedge" ]; then
@@ -20,12 +13,10 @@ if [ "$MODE" = "tezedge" ] || [ "$MODE" = "irmin" ]; then
     fi
 
     if [ "$INMEM" = 1 ]; then
-        BLOCK=BMK3jvChnpvqHqHvPErHk7WGWyAVmvjwq8EMj8QJ5t3TRCy3Gqd # 400 ithaca
-        # BLOCK=BLJXpn34ZfhtjFGb4gh61k8FLCzqNx2ZU7brBhihtYHtqghYe6U # 400
+        BLOCK=$BLOCK_LEVEL_400 # Need to process a lot more blocks, to let time for snapshot creation
         TEZEDGE_CONTEXT=inmem
     else
-        BLOCK=BLqNTDzsU6hETYiAu4s1Ring6MsC5StmNps3fzcnxbRVW6LGk9Y # 10 ithaca
-        # BLOCK=BLB6MA3z5jZmngy6CSbDFJ5kXhDfz1B9Zb3EPLxSm9oipvHkaxU # 10
+        BLOCK=$BLOCK_LEVEL_10
         TEZEDGE_CONTEXT=ondisk
     fi
 
@@ -33,7 +24,7 @@ if [ "$MODE" = "tezedge" ] || [ "$MODE" = "irmin" ]; then
 
     "$TEZEDGE_PATH/target/release/light-node" \
         --config-file "$TEZEDGE_PATH/light_node/etc/tezedge/tezedge.config" \
-        --network=ithacanet \
+        --network="$NETWORK" \
         --log-level info \
         --protocol-runner "$TEZEDGE_PATH/target/release/protocol-runner" \
         --tezos-data-dir "$BASEDIR/database" \
@@ -49,7 +40,7 @@ else
     "$TEZEDGE_PATH/target/release/light-node" \
         --protocol-runner "$TEZEDGE_PATH/target/release/protocol-runner" \
         --tezos-data-dir "$TARGET_DIR" \
-        --network=ithacanet \
+        --network="$NETWORK" \
         --bootstrap-db-path=bootstrap_db \
         --tezos-context-storage=tezedge \
         --p2p-port 19732 \
